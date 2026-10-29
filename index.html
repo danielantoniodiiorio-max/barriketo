@@ -228,7 +228,7 @@
 
         <div>
           <label class="block font-semibold text-slate-300 mb-1">URL del Webhook (Apps Script Web App):</label>
-          <input type="text" id="cfgWebhookUrl" class="w-full bg-slate-900 border border-brand-border rounded-xl px-3 py-2 text-white font-mono focus:outline-none focus:border-sky-500" value="https://script.google.com/macros/s/AKfycbwfBQXoaQ1_sBt5XqUMsv93i810OvYiT-2vnfpz7uqHOkdEVSjrsMyixPvDIpfHZTor/exec">
+          <input type="text" id="cfgWebhookUrl" class="w-full bg-slate-900 border border-brand-border rounded-xl px-3 py-2 text-white font-mono focus:outline-none focus:border-sky-500" value="https://script.google.com/macros/s/AKfycbwgwwUth2hPPWgdOJiud4aP9rCTLimhkgdAQnv5fo46htDnxWW78BX5QClFJOEK3as-/exec">
           <span class="text-[10px] text-slate-500 mt-1 block">Permite escritura automática directa desde el celular y script Garmin</span>
         </div>
 
@@ -3585,22 +3585,52 @@
         }
       });
 
-      // GRÁFICO 7: Proyección de Peso (Curva de Estabilización Osmótica ~81,0 - 81,4 kg en Modo Definición)
+      // GRÁFICO 7: Proyección de Peso Dinámica y Estabilización Osmótica (Calibración Continua Autónoma)
       const weightLabels = isRecomp ? [
         'Inicio Recomp', 'Día 3 (Recarga)', 'Día 6 (Volemia)',
         'Día 9 (Estab.)', 'Día 12 (Recomp)', 'Día 15 (Tono)', 'Día 18 (Firmeza)', 'Día 21 (Meta Recomp)'
-      ] : [
-        '21/10 (D1)', '22/10 (D2)', '23/10 (D3)',
-        '24/10 (D4)', '25/10 (D5)', '26/10 (D6)', '27/10 (D7)', '28/10 (D8)', '29/10 (D9 Hoy)'
-      ];
+      ] : data.map((d, i) => {
+        const shortDate = d.fecha.replace('/2026', '');
+        const isToday = d.isPartial || isDateToday(d.fecha);
+        return isToday ? `${shortDate} (D${i + 1} Hoy)` : `${shortDate} (D${i + 1})`;
+      });
+
+      const baseHistoricalWeightsWithEdema = [83.0, 81.8, 81.1, 80.6, 80.2, 79.7, 79.4, 79.1];
+      const baseHistoricalWeightsPureFat   = [83.0, 81.4, 80.7, 80.2, 79.8, 79.5, 79.2, 79.0];
 
       const weightPrimaryData = isRecomp
         ? [79.7, 80.6, 81.1, 81.3, 81.2, 81.2, 81.2, 81.1]
-        : [83.0, 81.8, 81.1, 80.6, 80.2, 79.7, 79.4, 79.1, 78.8];
+        : data.map((d, i) => {
+            if (i < baseHistoricalWeightsWithEdema.length) {
+              return baseHistoricalWeightsWithEdema[i];
+            }
+            return Math.round((79.1 - ((i - 7) * 0.3)) * 10) / 10;
+          });
 
       const weightSecondaryData = isRecomp
         ? [81.2, 81.2, 81.2, 81.2, 81.2, 81.2, 81.2, 81.2]
-        : [83.0, 81.4, 80.7, 80.2, 79.8, 79.5, 79.2, 79.0, 78.7];
+        : data.map((d, i) => {
+            if (i < baseHistoricalWeightsPureFat.length) {
+              return baseHistoricalWeightsPureFat[i];
+            }
+            return Math.round((79.0 - ((i - 7) * 0.3)) * 10) / 10;
+          });
+
+      const pointRadiusArray = isRecomp
+        ? [6, 6, 6, 6, 6, 6, 6, 8]
+        : data.map((d, i) => (i === data.length - 1 ? 8 : 6));
+
+      const pointBgColorArray = isRecomp
+        ? ['#06B6D4', '#06B6D4', '#10B981', '#10B981', '#10B981', '#10B981', '#10B981', '#06B6D4']
+        : data.map((d, i) => {
+            if (i === data.length - 1) return '#10B981'; // Punto de hoy en verde esmeralda brillante
+            if (i === data.length - 2) return '#94A3B8'; // Punto de ayer
+            return '#38BDF8'; // Días anteriores en azul
+          });
+
+      const muscleLineData = isRecomp
+        ? [62.5, 62.5, 62.5, 62.5, 62.5, 62.5, 62.5, 62.5]
+        : data.map(() => 62.5);
 
       renderOrUpdateChart('chartWeightTrajectory', {
         type: 'line',
@@ -3615,12 +3645,8 @@
               borderWidth: 3,
               fill: false,
               tension: 0.35,
-              pointRadius: isRecomp
-                ? [6, 6, 6, 6, 6, 6, 6, 8]
-                : [6, 6, 6, 6, 6, 6, 6, 6, 8],
-              pointBackgroundColor: isRecomp
-                ? ['#06B6D4', '#06B6D4', '#10B981', '#10B981', '#10B981', '#10B981', '#10B981', '#06B6D4']
-                : ['#38BDF8', '#38BDF8', '#38BDF8', '#38BDF8', '#38BDF8', '#38BDF8', '#38BDF8', '#94A3B8', '#10B981']
+              pointRadius: pointRadiusArray,
+              pointBackgroundColor: pointBgColorArray
             },
             {
               label: isRecomp ? 'Banda de Equilibrio Osmótico (81,2 kg · Cero Ganancia Grasa)' : 'Tendencia Grasa Pura Sin Edema (kg)',
@@ -3636,7 +3662,7 @@
             },
             {
               label: 'Masa Muscular Blindada por Mecanotransducción (kg)',
-              data: isRecomp ? [62.5, 62.5, 62.5, 62.5, 62.5, 62.5, 62.5, 62.5] : [62.5, 62.5, 62.5, 62.5, 62.5, 62.5, 62.5, 62.5, 62.5],
+              data: muscleLineData,
               borderColor: '#10B981',
               borderWidth: 1.5,
               borderDash: [2, 4],
@@ -4682,7 +4708,7 @@ Actúa como médico especialista en endocrinología deportiva y bioenergética d
 
     window.onload = function() {
       // Registrar por defecto el webhook en localStorage
-      const defaultWebhook = "https://script.google.com/macros/s/AKfycbwfBQXoaQ1_sBt5XqUMsv93i810OvYiT-2vnfpz7uqHOkdEVSjrsMyixPvDIpfHZTor/exec";
+      const defaultWebhook = "https://script.google.com/macros/s/AKfycbwgwwUth2hPPWgdOJiud4aP9rCTLimhkgdAQnv5fo46htDnxWW78BX5QClFJOEK3as-/exec";
       if (!localStorage.getItem('barriketo_webhook_url')) {
         localStorage.setItem('barriketo_webhook_url', defaultWebhook);
       }
