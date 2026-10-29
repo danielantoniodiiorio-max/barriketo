@@ -1452,7 +1452,8 @@
       '25/10': { minInt: 0, pisos: 7 },
       '26/10': { minInt: 50, pisos: 13 },
       '27/10': { minInt: 27, pisos: 25 },
-      '28/10': { minInt: 57, pisos: 39 }
+      '28/10': { minInt: 57, pisos: 44 },
+      '29/10': { minInt: 55, pisos: 17 }
     };
 
     const REAL_GARMIN_STRENGTH = {
@@ -1463,7 +1464,8 @@
       '25/10': { fuerzaMin: 0.0, calFuerza: 0.0, glucogeno: 0.0, grasaNetaCorr: 156.5 },
       '26/10': { fuerzaMin: 43.1, calFuerza: 239.0, glucogeno: 41.8, grasaNetaCorr: 193.7 },
       '27/10': { fuerzaMin: 45.3, calFuerza: 201.0, glucogeno: 35.2, grasaNetaCorr: 227.5 },
-      '28/10': { fuerzaMin: 48.3, calFuerza: 297.0, glucogeno: 52.0, grasaNetaCorr: 107.6 }
+      '28/10': { fuerzaMin: 48.3, calFuerza: 297.0, glucogeno: 52.0, grasaNetaCorr: 201.2 },
+      '29/10': { fuerzaMin: 45.8, calFuerza: 276.0, glucogeno: 48.3, grasaNetaCorr: 105.4 }
     };
 
     const fallbackData = [
@@ -1623,29 +1625,53 @@
       },
       {
         fecha: '28/10/2026',
-        pasos: 8773,
+        pasos: 25006,
         minInt: 57,
         fcRep: 43,
-        calAct: 660,
-        calRep: 1020,
-        calQuem: 1680,
-        calIng: 460,
-        prot: 74.6,
-        carb: 0.8,
-        gras: 17.0,
-        balance: -1220,
-        grasaOx: 130.7,
-        grasaNeta: 113.7,
-        pisos: 39,
+        calAct: 1239,
+        calRep: 2191,
+        calQuem: 3430,
+        calIng: 1118,
+        prot: 176.9,
+        carb: 2.4,
+        gras: 42.5,
+        balance: -2312,
+        grasaOx: 266.8,
+        grasaNeta: 224.3,
+        pisos: 44,
         fuerzaMin: 48.3,
         calFuerza: 297.0,
         glucogeno: 52.0,
-        grasaNetaCorr: 90.6,
+        grasaNetaCorr: 201.2,
+        isPartial: false
+      },
+      {
+        fecha: '29/10/2026',
+        pasos: 8398,
+        minInt: 55,
+        fcRep: 44,
+        calAct: 622,
+        calRep: 1010,
+        calQuem: 1632,
+        calIng: 0,
+        prot: 0.0,
+        carb: 0.0,
+        gras: 0.0,
+        balance: -1632,
+        grasaOx: 126.9,
+        grasaNeta: 126.9,
+        pisos: 17,
+        fuerzaMin: 45.8,
+        calFuerza: 276.0,
+        glucogeno: 48.3,
+        grasaNetaCorr: 105.4,
         isPartial: true
       }
     ];
 
     let currentDataset = [...fallbackData];
+    window.currentDataset = currentDataset;
+    window.charts = charts;
     let autoSyncTimer = null;
 
     function getTodayKey() {
@@ -1764,15 +1790,17 @@
             cleanKey = `${parts[2]}/${parts[1]}`;
           }
 
-          const dailyM = REAL_GARMIN_DAILY_METRICS[cleanKey];
-          let realMinInt = dailyM ? dailyM.minInt : (parseNum(cells[2]) || 0);
-          let realPisos = dailyM ? dailyM.pisos : (cells.length > 15 && parseNum(cells[15]) > 0 ? parseNum(cells[15]) : 0);
+          const dailyM = (REAL_GARMIN_DAILY_METRICS && REAL_GARMIN_DAILY_METRICS[cleanKey]) ? REAL_GARMIN_DAILY_METRICS[cleanKey] : {};
+          const liveM = (window.GARMIN_LIVE_METRICS && window.GARMIN_LIVE_METRICS[cleanKey]) ? window.GARMIN_LIVE_METRICS[cleanKey] : {};
+          let realMinInt = dailyM.minInt !== undefined ? dailyM.minInt : (liveM.minInt !== undefined ? Number(liveM.minInt) : (parseNum(cells[2]) || 0));
+          let realPisos = dailyM.pisos !== undefined ? dailyM.pisos : (liveM.pisos !== undefined ? Number(liveM.pisos) : (cells.length > 18 && parseNum(cells[18]) > 0 ? parseNum(cells[18]) : 0));
 
-          const gStrength = REAL_GARMIN_STRENGTH[cleanKey];
-          const fuerzaMin = gStrength ? gStrength.fuerzaMin : (cells.length > 14 ? parseNum(cells[14]) : 0);
-          const calFuerza = gStrength ? gStrength.calFuerza : (cells.length > 15 ? parseNum(cells[15]) : 0);
-          const glucogeno = gStrength ? gStrength.glucogeno : (cells.length > 16 ? parseNum(cells[16]) : 0);
-          const grasaNetaCorr = gStrength ? gStrength.grasaNetaCorr : (cells.length > 17 && parseNum(cells[17]) > 0 ? parseNum(cells[17]) : grasaNeta);
+          const gStrength = (REAL_GARMIN_STRENGTH && REAL_GARMIN_STRENGTH[cleanKey]) ? REAL_GARMIN_STRENGTH[cleanKey] : {};
+          const rawFuerza = cells.length > 14 ? parseNum(cells[14]) : 0;
+          const fuerzaMin = (gStrength.fuerzaMin !== undefined && gStrength.fuerzaMin > 0) ? gStrength.fuerzaMin : (liveM.fuerzaMin ? Number(liveM.fuerzaMin) : rawFuerza);
+          const calFuerza = (gStrength.calFuerza !== undefined && gStrength.calFuerza > 0) ? gStrength.calFuerza : (liveM.calFuerza ? Number(liveM.calFuerza) : (cells.length > 15 && parseNum(cells[15]) > 0 ? parseNum(cells[15]) : 0));
+          const glucogeno = (gStrength.glucogeno !== undefined && gStrength.glucogeno > 0) ? gStrength.glucogeno : (liveM.glucogeno ? Number(liveM.glucogeno) : (cells.length > 16 && parseNum(cells[16]) > 0 ? parseNum(cells[16]) : 0));
+          const grasaNetaCorr = (gStrength.grasaNetaCorr !== undefined && gStrength.grasaNetaCorr > 0) ? gStrength.grasaNetaCorr : (cells.length > 17 && parseNum(cells[17]) > 0 ? parseNum(cells[17]) : grasaNeta);
 
           rows.push({
             fecha: fechaStr,
@@ -1852,11 +1880,16 @@
           } else if (prev.calQuem === 0) {
             prev.calQuem = r.calQuem;
           }
-          prev.pisos = Math.max(prev.pisos || 0, r.pisos || 0);
-          prev.minInt = Math.max(prev.minInt || 0, r.minInt || 0);
-          prev.fuerzaMin = Math.max(prev.fuerzaMin || 0, r.fuerzaMin || 0);
-          prev.calFuerza = Math.max(prev.calFuerza || 0, r.calFuerza || 0);
-          prev.glucogeno = Math.max(prev.glucogeno || 0, r.glucogeno || 0);
+          const shortDayKey = cleanKey.split('/').slice(0, 2).join('/');
+          const staticStr = (typeof REAL_GARMIN_STRENGTH !== 'undefined' && REAL_GARMIN_STRENGTH[shortDayKey]) ? REAL_GARMIN_STRENGTH[shortDayKey] : {};
+          const staticDly = (typeof REAL_GARMIN_DAILY_METRICS !== 'undefined' && REAL_GARMIN_DAILY_METRICS[shortDayKey]) ? REAL_GARMIN_DAILY_METRICS[shortDayKey] : {};
+          const liveEntry = (window.GARMIN_LIVE_METRICS && window.GARMIN_LIVE_METRICS[shortDayKey]) ? window.GARMIN_LIVE_METRICS[shortDayKey] : {};
+
+          prev.pisos = Math.max(prev.pisos || 0, r.pisos || 0, staticDly.pisos || 0, Number(liveEntry.pisos) || 0);
+          prev.minInt = Math.max(prev.minInt || 0, r.minInt || 0, staticDly.minInt || 0, Number(liveEntry.minInt) || 0);
+          prev.fuerzaMin = Math.max(prev.fuerzaMin || 0, r.fuerzaMin || 0, staticStr.fuerzaMin || 0, Number(liveEntry.fuerzaMin) || 0);
+          prev.calFuerza = Math.max(prev.calFuerza || 0, r.calFuerza || 0, staticStr.calFuerza || 0, Number(liveEntry.calFuerza) || 0);
+          prev.glucogeno = Math.max(prev.glucogeno || 0, r.glucogeno || 0, staticStr.glucogeno || 0, Number(liveEntry.glucogeno) || 0);
           if (r.fcRep > 0) prev.fcRep = r.fcRep;
 
           // En Hoja 1 los registros de comida del día son instantáneas acumuladas (mientras que Auto Garmin Sync escribe 0 en ingesta).
@@ -1932,6 +1965,17 @@
         if (val.carb > 450) val.carb = 0;
 
         const shortKey = key.split('/').slice(0, 2).join('/');
+        const staticStr = (typeof REAL_GARMIN_STRENGTH !== 'undefined' && REAL_GARMIN_STRENGTH[shortKey]) ? REAL_GARMIN_STRENGTH[shortKey] : {};
+        const staticDly = (typeof REAL_GARMIN_DAILY_METRICS !== 'undefined' && REAL_GARMIN_DAILY_METRICS[shortKey]) ? REAL_GARMIN_DAILY_METRICS[shortKey] : {};
+        const liveEntry = (window.GARMIN_LIVE_METRICS && window.GARMIN_LIVE_METRICS[shortKey]) ? window.GARMIN_LIVE_METRICS[shortKey] : {};
+
+        val.pisos = Math.max(val.pisos || 0, staticDly.pisos || 0, Number(liveEntry.pisos) || 0);
+        val.minInt = Math.max(val.minInt || 0, staticDly.minInt || 0, Number(liveEntry.minInt) || 0);
+        val.fuerzaMin = Math.max(val.fuerzaMin || 0, staticStr.fuerzaMin || 0, Number(liveEntry.fuerzaMin) || 0);
+        val.calFuerza = Math.max(val.calFuerza || 0, staticStr.calFuerza || 0, Number(liveEntry.calFuerza) || 0);
+        val.glucogeno = Math.max(val.glucogeno || 0, staticStr.glucogeno || 0, Number(liveEntry.glucogeno) || 0);
+        const anaerobicFatEqDay = ((val.calFuerza || 0) * 0.70) / 9;
+        val.grasaNetaCorr = Math.max(0, Math.round(((val.grasaNeta || 0) - anaerobicFatEqDay) * 10) / 10);
         const knownMeals = (typeof liveMeals !== 'undefined' && liveMeals[shortKey] && liveMeals[shortKey].length > 0)
           ? liveMeals[shortKey]
           : (typeof MEALS_DATABASE !== 'undefined' && MEALS_DATABASE[shortKey] ? MEALS_DATABASE[shortKey] : null);
@@ -2467,23 +2511,18 @@
             cleanKeyRaw = `${parts[2]}/${parts[1]}`;
           }
 
-          const dailyMRaw = REAL_GARMIN_DAILY_METRICS[cleanKeyRaw];
-          let realMinInt = dailyMRaw ? dailyMRaw.minInt : (parseNum(cells[2]) || 0);
-          let realPisos = dailyMRaw ? dailyMRaw.pisos : (cells.length > 15 && parseNum(cells[15]) > 0 ? parseNum(cells[15]) : 0);
+          const dailyMRaw = (REAL_GARMIN_DAILY_METRICS && REAL_GARMIN_DAILY_METRICS[cleanKeyRaw]) ? REAL_GARMIN_DAILY_METRICS[cleanKeyRaw] : {};
+          const liveMRaw = (window.GARMIN_LIVE_METRICS && window.GARMIN_LIVE_METRICS[cleanKeyRaw]) ? window.GARMIN_LIVE_METRICS[cleanKeyRaw] : {};
+          let realMinInt = dailyMRaw.minInt !== undefined ? dailyMRaw.minInt : (liveMRaw.minInt !== undefined ? Number(liveMRaw.minInt) : (parseNum(cells[2]) || 0));
+          let realPisos = dailyMRaw.pisos !== undefined ? dailyMRaw.pisos : (liveMRaw.pisos !== undefined ? Number(liveMRaw.pisos) : (cells.length > 18 && parseNum(cells[18]) > 0 ? parseNum(cells[18]) : 0));
 
-          let cleanKey = '';
-          if (fechaStr.includes('/')) {
-            cleanKey = fechaStr.split('/').slice(0, 2).join('/');
-          } else if (fechaStr.includes('-')) {
-            const parts = fechaStr.split('T')[0].split('-');
-            cleanKey = `${parts[2]}/${parts[1]}`;
-          }
-
-          const gStrength = REAL_GARMIN_STRENGTH[cleanKey];
-          const fuerzaMin = gStrength ? gStrength.fuerzaMin : (cells.length > 14 ? parseNum(cells[14]) : 0);
-          const calFuerza = gStrength ? gStrength.calFuerza : (cells.length > 15 ? parseNum(cells[15]) : 0);
-          const glucogeno = gStrength ? gStrength.glucogeno : (cells.length > 16 ? parseNum(cells[16]) : 0);
-          const grasaNetaCorr = gStrength ? gStrength.grasaNetaCorr : (cells.length > 17 && parseNum(cells[17]) > 0 ? parseNum(cells[17]) : grasaNeta);
+          let cleanKey = cleanKeyRaw;
+          const gStrength = (REAL_GARMIN_STRENGTH && REAL_GARMIN_STRENGTH[cleanKey]) ? REAL_GARMIN_STRENGTH[cleanKey] : {};
+          const rawFuerzaRaw = cells.length > 14 ? parseNum(cells[14]) : 0;
+          const fuerzaMin = (gStrength.fuerzaMin !== undefined && gStrength.fuerzaMin > 0) ? gStrength.fuerzaMin : (liveMRaw.fuerzaMin ? Number(liveMRaw.fuerzaMin) : rawFuerzaRaw);
+          const calFuerza = (gStrength.calFuerza !== undefined && gStrength.calFuerza > 0) ? gStrength.calFuerza : (liveMRaw.calFuerza ? Number(liveMRaw.calFuerza) : (cells.length > 15 && parseNum(cells[15]) > 0 ? parseNum(cells[15]) : 0));
+          const glucogeno = (gStrength.glucogeno !== undefined && gStrength.glucogeno > 0) ? gStrength.glucogeno : (liveMRaw.glucogeno ? Number(liveMRaw.glucogeno) : (cells.length > 16 && parseNum(cells[16]) > 0 ? parseNum(cells[16]) : 0));
+          const grasaNetaCorr = (gStrength.grasaNetaCorr !== undefined && gStrength.grasaNetaCorr > 0) ? gStrength.grasaNetaCorr : (cells.length > 17 && parseNum(cells[17]) > 0 ? parseNum(cells[17]) : grasaNeta);
 
           rows.push({
             fecha: fechaStr,
@@ -2901,8 +2940,12 @@
         { hora: '23:26', comida: 'Cena', desc: '200g pechuga de pollo, 1 huevo a la plancha, ensalada de rúcula y queso', cal: 310, prot: 55.0, gras: 9.0, carb: 2.0 }
       ],
       '28/10': [
-        { hora: '13:01', comida: 'Almuerzo', desc: '200g pechuga de pollo a la plancha + 2 huevos a la plancha', cal: 460, prot: 74.6, gras: 17.0, carb: 0.8 }
-      ]
+        { hora: '13:01', comida: 'Almuerzo', desc: '200g pechuga de pollo a la plancha + 2 huevos a la plancha', cal: 460, prot: 74.6, gras: 17.0, carb: 0.8 },
+        { hora: '17:10', comida: 'Merienda', desc: '2 huevos duros + té con edulcorante', cal: 155, prot: 13.0, gras: 10.6, carb: 0.8 },
+        { hora: '19:26', comida: 'Snack', desc: '120 g de atún al natural', cal: 139, prot: 31.2, gras: 1.1, carb: 0.0 },
+        { hora: '21:30', comida: 'Cena', desc: '150g de pechuga + 2 huevos a la plancha', cal: 364, prot: 58.1, gras: 13.8, carb: 0.8 }
+      ],
+      '29/10': []
     };
 
     const expandedDayIds = new Set();
@@ -3548,16 +3591,16 @@
         'Día 9 (Estab.)', 'Día 12 (Recomp)', 'Día 15 (Tono)', 'Día 18 (Firmeza)', 'Día 21 (Meta Recomp)'
       ] : [
         '21/10 (D1)', '22/10 (D2)', '23/10 (D3)',
-        '24/10 (D4)', '25/10 (D5)', '26/10 (D6 Hoy)', '27/10 (D7 Est)', '28/10 (Pesaje Oficial)'
+        '24/10 (D4)', '25/10 (D5)', '26/10 (D6)', '27/10 (D7)', '28/10 (D8)', '29/10 (D9 Hoy)'
       ];
 
       const weightPrimaryData = isRecomp
-        ? [79.7, 80.6, 81.1, 81.3, 81.2, 81.2, 81.1, 81.1]
-        : [83.0, 81.8, 81.1, 80.6, 80.2, 79.7, 79.4, 79.1];
+        ? [79.7, 80.6, 81.1, 81.3, 81.2, 81.2, 81.2, 81.1]
+        : [83.0, 81.8, 81.1, 80.6, 80.2, 79.7, 79.4, 79.1, 78.8];
 
       const weightSecondaryData = isRecomp
         ? [81.2, 81.2, 81.2, 81.2, 81.2, 81.2, 81.2, 81.2]
-        : [83.0, 81.4, 80.7, 80.2, 79.8, 79.5, 79.2, 79.1];
+        : [83.0, 81.4, 80.7, 80.2, 79.8, 79.5, 79.2, 79.0, 78.7];
 
       renderOrUpdateChart('chartWeightTrajectory', {
         type: 'line',
@@ -3572,10 +3615,12 @@
               borderWidth: 3,
               fill: false,
               tension: 0.35,
-              pointRadius: [6, 6, 6, 6, 6, 7, 6, 8],
+              pointRadius: isRecomp
+                ? [6, 6, 6, 6, 6, 6, 6, 8]
+                : [6, 6, 6, 6, 6, 6, 6, 6, 8],
               pointBackgroundColor: isRecomp
                 ? ['#06B6D4', '#06B6D4', '#10B981', '#10B981', '#10B981', '#10B981', '#10B981', '#06B6D4']
-                : ['#38BDF8', '#38BDF8', '#38BDF8', '#38BDF8', '#38BDF8', '#10B981', '#94A3B8', '#A855F7']
+                : ['#38BDF8', '#38BDF8', '#38BDF8', '#38BDF8', '#38BDF8', '#38BDF8', '#38BDF8', '#94A3B8', '#10B981']
             },
             {
               label: isRecomp ? 'Banda de Equilibrio Osmótico (81,2 kg · Cero Ganancia Grasa)' : 'Tendencia Grasa Pura Sin Edema (kg)',
@@ -3591,7 +3636,7 @@
             },
             {
               label: 'Masa Muscular Blindada por Mecanotransducción (kg)',
-              data: [62.5, 62.5, 62.5, 62.5, 62.5, 62.5, 62.5, 62.5],
+              data: isRecomp ? [62.5, 62.5, 62.5, 62.5, 62.5, 62.5, 62.5, 62.5] : [62.5, 62.5, 62.5, 62.5, 62.5, 62.5, 62.5, 62.5, 62.5],
               borderColor: '#10B981',
               borderWidth: 1.5,
               borderDash: [2, 4],
