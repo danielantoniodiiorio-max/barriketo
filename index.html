@@ -1017,14 +1017,14 @@
       <div id="kpiHRStatus" class="text-[11px] text-emerald-400 mt-1 font-medium">Óptimo tono vagal</div>
     </div>
 
-    <!-- KPI 6: Proyección de Peso -->
+    <!-- KPI 6: Proyección de Peso Dinámica y Balanza Diaria -->
     <div class="bg-brand-card border border-brand-border rounded-xl p-4 shadow-lg hover:border-cyan-500/40 transition">
       <div class="flex items-center justify-between text-slate-400 mb-1">
-        <span class="text-[11px] font-semibold uppercase tracking-wider">Balanza 28/10</span>
+        <span id="kpiWeightTitle" class="text-[11px] font-semibold uppercase tracking-wider">PESO EN VIVO</span>
         <span class="text-cyan-400">⚖️</span>
       </div>
-      <div id="kpiProjectedWeight" class="text-xl sm:text-2xl font-black text-cyan-300">79,6 kg</div>
-      <div id="kpiWeightDrop" class="text-[11px] text-cyan-400 mt-1 font-medium">-3,4 kg desde 83 kg</div>
+      <div id="kpiProjectedWeight" class="text-xl sm:text-2xl font-black text-cyan-300">79,3 kg</div>
+      <div id="kpiWeightDrop" class="text-[11px] text-cyan-400 mt-1 font-medium">-3,7 kg desde 83 kg <span class="text-slate-400 font-normal">· Grasa pura: 78,9 kg</span></div>
     </div>
 
     <!-- KPI 7: Sesiones de Fuerza / Sobrecarga (v5.0 Biometría) -->
@@ -1209,13 +1209,13 @@
             <span class="text-xs font-semibold text-violet-400 bg-violet-500/10 border border-violet-500/20 px-2.5 py-1 rounded-md">
               Blindaje Miofibrilar Activo
             </span>
-            <span class="text-xs font-semibold text-purple-400 bg-purple-500/10 border border-purple-500/20 px-2.5 py-1 rounded-md">
-              Pesaje Oficial: 28/10 5:30 AM
+            <span id="badgeWeightCalcMode" class="text-xs font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-md">
+              Cálculo Bioenergético Diario Activo
             </span>
           </div>
         </div>
         <p class="text-xs text-slate-400 mb-3">
-          Calibración bioenergética avanzada: preservación del 100% de la masa muscular esquelética contráctil vía estímulo mecanoquímico y segregación del edema hídrico inflamatorio post-entrenamiento.
+          Cálculo bioenergético metabólico exacto: reducción de tejido adiposo derivada del déficit real y macros diarios, vaciado de glucógeno y retención osmótica de carbohidratos, más modulación del edema miofibrilar transitorio post-entrenamiento.
         </p>
       </div>
       <div class="relative h-72 sm:h-80 w-full">
@@ -1453,7 +1453,8 @@
       '26/10': { minInt: 50, pisos: 13 },
       '27/10': { minInt: 27, pisos: 25 },
       '28/10': { minInt: 57, pisos: 44 },
-      '29/10': { minInt: 55, pisos: 17 }
+      '29/10': { minInt: 55, pisos: 20 },
+      '30/10': { minInt: 70, pisos: 30 }
     };
 
     const REAL_GARMIN_STRENGTH = {
@@ -1465,7 +1466,8 @@
       '26/10': { fuerzaMin: 43.1, calFuerza: 239.0, glucogeno: 41.8, grasaNetaCorr: 193.7 },
       '27/10': { fuerzaMin: 45.3, calFuerza: 201.0, glucogeno: 35.2, grasaNetaCorr: 227.5 },
       '28/10': { fuerzaMin: 48.3, calFuerza: 297.0, glucogeno: 52.0, grasaNetaCorr: 201.2 },
-      '29/10': { fuerzaMin: 45.8, calFuerza: 276.0, glucogeno: 48.3, grasaNetaCorr: 105.4 }
+      '29/10': { fuerzaMin: 45.8, calFuerza: 276.0, glucogeno: 48.3, grasaNetaCorr: 171.5 },
+      '30/10': { fuerzaMin: 45.2, calFuerza: 219.0, glucogeno: 38.3, grasaNetaCorr: 126.9 }
     };
 
     const fallbackData = [
@@ -1647,24 +1649,46 @@
       },
       {
         fecha: '29/10/2026',
-        pasos: 8398,
+        pasos: 24088,
         minInt: 55,
         fcRep: 44,
-        calAct: 622,
-        calRep: 1010,
-        calQuem: 1632,
-        calIng: 0,
-        prot: 0.0,
-        carb: 0.0,
-        gras: 0.0,
-        balance: -1632,
-        grasaOx: 126.9,
-        grasaNeta: 126.9,
-        pisos: 17,
+        calAct: 1197,
+        calRep: 2191,
+        calQuem: 3388,
+        calIng: 1440,
+        prot: 149.3,
+        carb: 44.1,
+        gras: 70.5,
+        balance: -1948,
+        grasaOx: 263.5,
+        grasaNeta: 193.0,
+        pisos: 20,
         fuerzaMin: 45.8,
         calFuerza: 276.0,
         glucogeno: 48.3,
-        grasaNetaCorr: 105.4,
+        grasaNetaCorr: 171.5,
+        isPartial: false
+      },
+      {
+        fecha: '30/10/2026',
+        pasos: 16273,
+        minInt: 70,
+        fcRep: 44,
+        calAct: 921,
+        calRep: 1559,
+        calQuem: 2480,
+        calIng: 805,
+        prot: 82.6,
+        carb: 1.7,
+        gras: 49.0,
+        balance: -1675,
+        grasaOx: 192.9,
+        grasaNeta: 143.9,
+        pisos: 30,
+        fuerzaMin: 45.2,
+        calFuerza: 219.0,
+        glucogeno: 38.3,
+        grasaNetaCorr: 126.9,
         isPartial: true
       }
     ];
@@ -2551,7 +2575,46 @@
       return consolidateDays(rows);
     }
 
+    function updateWeightKpiVisuals(data, isRecomp) {
+      const kpiTitle = document.getElementById('kpiWeightTitle');
+      const kpiWeight = document.getElementById('kpiProjectedWeight');
+      const kpiDrop = document.getElementById('kpiWeightDrop');
+      if (!kpiWeight) return;
+
+      if (isRecomp) {
+        if (kpiTitle) kpiTitle.textContent = "BALANZA RECOMP";
+        kpiWeight.textContent = "81,2 kg";
+        if (kpiDrop) kpiDrop.innerHTML = "Estabilización 81,0 - 81,4 kg";
+        return;
+      }
+
+      const dataset = (Array.isArray(data) && data.length > 0) ? data : (window.currentDashboardData || (typeof fallbackData !== 'undefined' ? fallbackData : []));
+      if (!Array.isArray(dataset) || dataset.length === 0) return;
+
+      const trajectory = calculateBiophysicalWeightTrajectory(dataset, 83.0);
+      if (!trajectory.scaleData || trajectory.scaleData.length === 0) return;
+
+      const latestScale = trajectory.scaleData[trajectory.scaleData.length - 1];
+      const latestPure = trajectory.pureFatData[trajectory.pureFatData.length - 1];
+      const diffKg = (latestScale - 83.0).toFixed(1);
+      const diffSign = (Number(diffKg) > 0 ? `+${diffKg}` : diffKg).replace('.', ',');
+
+      const todayObj = dataset.find(d => d.isPartial) || dataset[dataset.length - 1];
+      let dayLabel = "HOY";
+      if (todayObj && todayObj.fecha) {
+        const parts = todayObj.fecha.split('/');
+        dayLabel = parts.length >= 2 ? `${parts[0]}/${parts[1]}` : todayObj.fecha;
+      }
+
+      if (kpiTitle) kpiTitle.textContent = `PESO EN VIVO (${dayLabel})`;
+      kpiWeight.textContent = `${latestScale.toFixed(1).replace('.', ',')} kg`;
+      if (kpiDrop) {
+        kpiDrop.innerHTML = `${diffSign} kg desde 83 kg <span class="text-slate-400 font-normal">· Grasa pura: ${latestPure.toFixed(1).replace('.', ',')} kg</span>`;
+      }
+    }
+
     function updateDashboard(data, isLive) {
+      window.currentDashboardData = data;
       document.getElementById('dataRowsCount').textContent = `${data.length} días consolidados en vivo`;
 
       const statusBadge = document.getElementById('connectionStatusBadge');
@@ -2598,6 +2661,7 @@
       document.getElementById('badgeCumulativeDeficit').textContent = `${totalDeficit.toLocaleString('es-AR')} kcal Acumuladas`;
 
       const isRecomp = isRecompModeActive();
+      updateWeightKpiVisuals(data, isRecomp);
       applyProtocolModeVisuals(isRecomp);
       updateFastingWindowStatus();
 
@@ -2945,7 +3009,19 @@
         { hora: '19:26', comida: 'Snack', desc: '120 g de atún al natural', cal: 139, prot: 31.2, gras: 1.1, carb: 0.0 },
         { hora: '21:30', comida: 'Cena', desc: '150g de pechuga + 2 huevos a la plancha', cal: 364, prot: 58.1, gras: 13.8, carb: 0.8 }
       ],
-      '29/10': []
+      '29/10': [
+        { hora: '11:30', comida: 'Snack', desc: '30g dulce de leche + 1 oblea ópera', cal: 198, prot: 2.7, gras: 8.1, carb: 28.5 },
+        { hora: '12:54', comida: 'Almuerzo', desc: '200g bondiola magra de cerdo + 2 huevos', cal: 493, prot: 56.6, gras: 29.0, carb: 0.8 },
+        { hora: '13:06', comida: 'Snack', desc: 'Media palta chica (~70-80 g)', cal: 125, prot: 1.5, gras: 11.5, carb: 1.5 },
+        { hora: '16:03', comida: 'Merienda', desc: '120g atún al natural', cal: 130, prot: 28.0, gras: 1.0, carb: 0.0 },
+        { hora: '19:52', comida: 'Snack', desc: '3 huevos duros chicos (~135g)', cal: 204, prot: 16.5, gras: 14.4, carb: 1.1 },
+        { hora: '21:30', comida: 'Cena', desc: 'Cena proteica', cal: 290, prot: 44.0, gras: 6.5, carb: 12.2 }
+      ],
+      '30/10': [
+        { hora: '13:10', comida: 'Almuerzo', desc: '150g bondiola de cerdo + 2 huevos a la plancha', cal: 518, prot: 41.0, gras: 38.5, carb: 1.0 },
+        { hora: '16:38', comida: 'Snack', desc: '2 huevos duros (~100g)', cal: 143, prot: 12.6, gras: 9.5, carb: 0.7 },
+        { hora: '18:34', comida: 'Merienda', desc: '120g de atún en lata', cal: 144, prot: 29.0, gras: 1.0, carb: 0.0 }
+      ]
     };
 
     const expandedDayIds = new Set();
@@ -3283,6 +3359,105 @@
       `;
     }
 
+        // MOTOR MATEMÁTICO & BIOENERGÉTICO DE PROYECCIÓN DE PESO (BASES CIENTÍFICAS KEVIN HALL / FORBES)
+    function calculateBiophysicalWeightTrajectory(data, initialWeight = 83.0) {
+      if (!Array.isArray(data) || data.length === 0) {
+        return { labels: [], scaleData: [], pureFatData: [], muscleData: [], pointRadius: [], pointBgColors: [], metaData: [] };
+      }
+
+      // Progresión asintótica de vaciado de glucógeno y bolo digestivo en cetosis profunda (~2,3 kg en meseta)
+      const glycogenGutCurve = [0.0, 1.10, 1.75, 2.10, 2.30];
+      let cumAdiposeLossKg = 0.0;
+      let currEdema = 0.0;
+
+      const labels = [];
+      const scaleData = [];
+      const pureFatData = [];
+      const muscleData = [];
+      const pointRadius = [];
+      const pointBgColors = [];
+      const metaData = [];
+
+      data.forEach((d, i) => {
+        const shortDate = (d.fecha || '').replace('/2026', '');
+        const isToday = d.isPartial || isDateToday(d.fecha);
+        const dayLabel = isToday ? `${shortDate} (D${i + 1} Hoy)` : `${shortDate} (D${i + 1})`;
+        labels.push(dayLabel);
+
+        const calQuem = Number(d.calQuem) || 0;
+        const calIng = Number(d.calIng) || 0;
+        const carb = Number(d.carb) || 0;
+        const gras = Number(d.gras) || 0;
+        const fuerzaMin = Number(d.fuerzaMin) || 0;
+        const calFuerza = Number(d.calFuerza) || 0;
+
+        // 1. Pérdida biológica de tejido adiposo basada en oxidación de lípidos y balance energético
+        // En cetosis, ~70% del gasto energético proviene de beta-oxidación de ácidos grasos
+        const grasOx = (calQuem * 0.70) / 9.0;
+        const grasNeta = Math.max(0, grasOx - gras);
+        const anaerobicEq = (calFuerza * 0.70) / 9.0;
+        const grasNetaCorr = Math.max(0, grasNeta - anaerobicEq);
+        // La densidad del tejido adiposo humano es de ~7.700 kcal/kg (86% lípido, 14% agua y matriz estromal)
+        // Por tanto, 1g de grasa neta oxidada elimina 1.16g de tejido adiposo corporal
+        const dailyAdiposeLossKg = (grasNetaCorr * 1.16) / 1000.0;
+        if (i > 0) {
+          cumAdiposeLossKg += dailyAdiposeLossKg;
+        }
+
+        // 2. Vaciado de glucógeno y agua osmótica base (~2.3 kg en estado estacionario de cetosis)
+        const baseDepletion = i < glycogenGutCurve.length ? glycogenGutCurve[i] : 2.30;
+
+        // 3. Sensibilidad a carbohidratos (retención osmótica de glucógeno e insulina cuando CHO > 15g)
+        // Cada gramo de CHO por encima del umbral cetogénico retiene ~3.5g de agua + 1g glucógeno = 4.5g masa húmeda
+        const carbWaterRetention = Math.max(0, (carb - 15.0) * 0.0045);
+        const effectiveDepletion = Math.max(0, baseDepletion - carbWaterRetention);
+
+        // 4. Curva de Tendencia de Grasa Pura (Masa Seca sin Edema)
+        const wPureFat = Math.round((initialWeight - effectiveDepletion - cumAdiposeLossKg) * 10) / 10;
+        pureFatData.push(wPureFat);
+
+        // 5. Edema miofibrilar inflamatorio post-fuerza (Mecanotransducción)
+        if (fuerzaMin > 0) {
+          const edemaGen = Math.min(0.40, Math.max(0.20, (calFuerza / 280.0) * 0.32));
+          currEdema = (i === 0) ? edemaGen : (currEdema * 0.30) + edemaGen;
+        } else {
+          // Día de descanso: drenaje linfático acelerado
+          currEdema = currEdema * 0.15;
+        }
+        currEdema = Math.min(0.42, currEdema);
+
+        // 6. Peso Real Proyectado en Balanza
+        const wScale = (i === 0) ? initialWeight : Math.round((wPureFat + currEdema) * 10) / 10;
+        scaleData.push(wScale);
+
+        muscleData.push(62.5); // Blindaje muscular blindado en 62.5 kg
+
+        // Estilos de los puntos
+        if (i === data.length - 1) {
+          pointRadius.push(8);
+          pointBgColors.push('#10B981'); // Verde esmeralda para el día de hoy
+        } else if (i === data.length - 2) {
+          pointRadius.push(6);
+          pointBgColors.push('#94A3B8');
+        } else {
+          pointRadius.push(6);
+          pointBgColors.push('#38BDF8');
+        }
+
+        metaData.push({
+          wScale,
+          wPureFat,
+          dailyAdiposeGrams: Math.round(dailyAdiposeLossKg * 1000),
+          cumAdiposeKg: Math.round(cumAdiposeLossKg * 100) / 100,
+          edemaGrams: Math.round(currEdema * 1000),
+          carbWaterGrams: Math.round(carbWaterRetention * 1000),
+          isDeepKetosis: carb <= 20
+        });
+      });
+
+      return { labels, scaleData, pureFatData, muscleData, pointRadius, pointBgColors, metaData };
+    }
+
     function renderCharts(data) {
       const labels = data.map(d => d.fecha.replace('/2026', ''));
       const isRecomp = isRecompModeActive();
@@ -3585,52 +3760,33 @@
         }
       });
 
-      // GRÁFICO 7: Proyección de Peso Dinámica y Estabilización Osmótica (Calibración Continua Autónoma)
+      // GRÁFICO 7: Proyección de Peso Basada en Cálculo Bioenergético & Metabólico Real
+      const trajectory = calculateBiophysicalWeightTrajectory(data, 83.0);
+
       const weightLabels = isRecomp ? [
         'Inicio Recomp', 'Día 3 (Recarga)', 'Día 6 (Volemia)',
         'Día 9 (Estab.)', 'Día 12 (Recomp)', 'Día 15 (Tono)', 'Día 18 (Firmeza)', 'Día 21 (Meta Recomp)'
-      ] : data.map((d, i) => {
-        const shortDate = d.fecha.replace('/2026', '');
-        const isToday = d.isPartial || isDateToday(d.fecha);
-        return isToday ? `${shortDate} (D${i + 1} Hoy)` : `${shortDate} (D${i + 1})`;
-      });
-
-      const baseHistoricalWeightsWithEdema = [83.0, 81.8, 81.1, 80.6, 80.2, 79.7, 79.4, 79.1];
-      const baseHistoricalWeightsPureFat   = [83.0, 81.4, 80.7, 80.2, 79.8, 79.5, 79.2, 79.0];
+      ] : trajectory.labels;
 
       const weightPrimaryData = isRecomp
         ? [79.7, 80.6, 81.1, 81.3, 81.2, 81.2, 81.2, 81.1]
-        : data.map((d, i) => {
-            if (i < baseHistoricalWeightsWithEdema.length) {
-              return baseHistoricalWeightsWithEdema[i];
-            }
-            return Math.round((79.1 - ((i - 7) * 0.3)) * 10) / 10;
-          });
+        : trajectory.scaleData;
 
       const weightSecondaryData = isRecomp
         ? [81.2, 81.2, 81.2, 81.2, 81.2, 81.2, 81.2, 81.2]
-        : data.map((d, i) => {
-            if (i < baseHistoricalWeightsPureFat.length) {
-              return baseHistoricalWeightsPureFat[i];
-            }
-            return Math.round((79.0 - ((i - 7) * 0.3)) * 10) / 10;
-          });
+        : trajectory.pureFatData;
 
       const pointRadiusArray = isRecomp
         ? [6, 6, 6, 6, 6, 6, 6, 8]
-        : data.map((d, i) => (i === data.length - 1 ? 8 : 6));
+        : trajectory.pointRadius;
 
       const pointBgColorArray = isRecomp
         ? ['#06B6D4', '#06B6D4', '#10B981', '#10B981', '#10B981', '#10B981', '#10B981', '#06B6D4']
-        : data.map((d, i) => {
-            if (i === data.length - 1) return '#10B981'; // Punto de hoy en verde esmeralda brillante
-            if (i === data.length - 2) return '#94A3B8'; // Punto de ayer
-            return '#38BDF8'; // Días anteriores en azul
-          });
+        : trajectory.pointBgColors;
 
       const muscleLineData = isRecomp
         ? [62.5, 62.5, 62.5, 62.5, 62.5, 62.5, 62.5, 62.5]
-        : data.map(() => 62.5);
+        : trajectory.muscleData;
 
       renderOrUpdateChart('chartWeightTrajectory', {
         type: 'line',
@@ -3675,19 +3831,34 @@
           responsive: true,
           maintainAspectRatio: false,
           plugins: {
+            legend: { position: 'top', labels: { boxWidth: 10, padding: 12 } },
             tooltip: {
               callbacks: {
-                afterBody: function() {
-                  if (isRecompModeActive()) {
-                    return 'Normalización de glucógeno y volemia muscular, cero ganancia de grasa corporal';
-                  }
-                  return '';
+                title: function(items) {
+                  return items[0] ? items[0].label : '';
+                },
+                afterBody: function(items) {
+                  if (isRecomp) return [];
+                  const idx = items[0] ? items[0].dataIndex : 0;
+                  const meta = trajectory.metaData[idx];
+                  if (!meta) return [];
+                  return [
+                    `🥩 Grasa pura oxidada hoy: ${meta.dailyAdiposeGrams} g`,
+                    `📉 Grasa acumulada eliminada: ${meta.cumAdiposeKg} kg`,
+                    `🏋️ Edema de fuerza: +${meta.edemaGrams} g`,
+                    meta.carbWaterGrams > 0 ? `🍚 Agua por carbohidratos: +${meta.carbWaterGrams} g` : `🔥 Cetosis profunda (<20g CHO)`,
+                    `🛡️ Masa muscular blindada: 62.5 kg`
+                  ];
                 }
               }
             }
           },
           scales: {
-            y: { title: { display: true, text: 'Masa Corporal (kg)', font: { size: 10 } }, suggestedMin: 61.0, suggestedMax: 83.5 }
+            y: {
+              title: { display: true, text: 'Masa Corporal (kg)', font: { size: 10, weight: 'bold' } },
+              suggestedMin: 60,
+              suggestedMax: 85
+            }
           }
         }
       });
@@ -4672,8 +4843,7 @@ Actúa como médico especialista en endocrinología deportiva y bioenergética d
           oxModeLabel.textContent = "LOW CARB ≤80G";
           oxModeLabel.className = "text-[9px] text-cyan-400 font-semibold";
         }
-        if (kpiProjWeight) kpiProjWeight.textContent = "81,2 kg";
-        if (kpiWeightDrop) kpiWeightDrop.textContent = "Estabilización 81,0-81,4 kg";
+        updateWeightKpiVisuals(window.currentDashboardData, true);
         if (badgeAvgDef) {
           badgeAvgDef.className = "text-xs font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-2.5 py-1 rounded-md";
           badgeAvgDef.textContent = "Meta 2.200 kcal · Balance Neutro (-100 a +100)";
@@ -4701,8 +4871,7 @@ Actúa como médico especialista en endocrinología deportiva y bioenergética d
           oxModeLabel.textContent = "CETOSIS PURA";
           oxModeLabel.className = "text-[9px] text-emerald-400 font-semibold";
         }
-        if (kpiProjWeight) kpiProjWeight.textContent = "79,6 kg";
-        if (kpiWeightDrop) kpiWeightDrop.textContent = "-3,4 kg desde 83 kg";
+        updateWeightKpiVisuals(window.currentDashboardData, false);
       }
     }
 
