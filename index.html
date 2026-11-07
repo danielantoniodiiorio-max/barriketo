@@ -196,7 +196,82 @@
     </div>
   </div>
 
-  <!-- MODAL DE CONFIGURACIÓN DE CONEXIÓN A GOOGLE SHEETS & GEMINI -->
+  <!-- MODAL: REGISTRO Y AJUSTE DE BALANZA REAL -->
+  <div id="weighInModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm hidden">
+    <div class="bg-brand-card border border-brand-border rounded-2xl max-w-lg w-full p-6 shadow-2xl relative max-h-[92vh] overflow-y-auto">
+      <div class="flex items-center justify-between mb-4 pb-3 border-b border-brand-border">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 font-bold text-base shadow-sm">
+            ⚖️
+          </div>
+          <div>
+            <h3 class="text-base font-bold text-white">Registrar Pesaje Real</h3>
+            <p class="text-xs text-slate-400">Calibración y anclaje bioenergético de la curva</p>
+          </div>
+        </div>
+        <button type="button" onclick="closeWeighInModal()" class="text-slate-400 hover:text-white text-xl p-1 transition">&times;</button>
+      </div>
+
+      <!-- Explicación bioenergética -->
+      <div class="bg-slate-900/70 border border-slate-800 rounded-xl p-3.5 mb-5 text-xs text-slate-300 leading-relaxed">
+        <span class="text-amber-400 font-semibold">💡 Calibración Inteligente:</span> Al ingresar tu peso de balanza real en cualquier fecha, el sistema fija ese punto como ancla oficial y recalibra la pendiente bioenergética de descenso o ascenso para todos los días siguientes sin distorsionar la masa muscular ni los cálculos de grasa pura y agua.
+      </div>
+
+      <!-- Formulario -->
+      <form onsubmit="handleWeighInSubmit(event)" class="space-y-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">Fecha del Pesaje</label>
+            <input type="date" id="weighInDate" required class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">Peso en Balanza (kg)</label>
+            <div class="relative">
+              <input type="number" step="0.1" min="40" max="180" id="weighInWeight" required placeholder="Ej: 78.5" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-base font-black text-cyan-300 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition pr-10">
+              <span class="absolute right-3.5 top-2.5 text-xs font-semibold text-slate-500">kg</span>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">Momento / Condición</label>
+          <select id="weighInContext" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-slate-200 focus:outline-none focus:border-cyan-500 transition">
+            <option value="ayunas" selected>En ayunas al despertar (Pesaje Oficial Estándar)</option>
+            <option value="post_fuerza">Post-entrenamiento de fuerza (con edema miofibrilar)</option>
+            <option value="noche">Noche / Post-comidas</option>
+            <option value="otro">Otro momento / Control de rutina</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">Observación / Nota (Opcional)</label>
+          <input type="text" id="weighInNotes" placeholder="Ej: Balanza farmacia, 12h ayuno, buena hidratación..." class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-slate-200 placeholder-slate-600 focus:outline-none focus:border-cyan-500 transition">
+        </div>
+
+        <div class="flex items-center justify-end gap-3 pt-2">
+          <button type="button" onclick="closeWeighInModal()" class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-slate-800 transition">
+            Cancelar
+          </button>
+          <button type="submit" class="px-5 py-2 rounded-xl text-xs font-bold bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 transition shadow-lg shadow-amber-500/20 flex items-center gap-1.5">
+            <span>💾</span> <span>Guardar y Recalibrar Curva</span>
+          </button>
+        </div>
+      </form>
+
+      <!-- Historial de Pesajes Verificados -->
+      <div class="mt-6 pt-4 border-t border-brand-border">
+        <div class="flex items-center justify-between mb-2.5">
+          <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400">Historial de Pesajes Verificados</h4>
+          <span id="weighInCountBadge" class="text-[10px] font-semibold text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-full border border-amber-500/20">Cargando...</span>
+        </div>
+        <div id="weighInHistoryList" class="space-y-2 max-h-48 overflow-y-auto pr-1">
+          <!-- Renderizado dinámico -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+    <!-- MODAL DE CONFIGURACIÓN DE CONEXIÓN A GOOGLE SHEETS & GEMINI -->
   <div id="settingsModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm hidden">
     <div class="bg-brand-card border border-brand-border rounded-2xl max-w-lg w-full p-6 shadow-2xl relative">
       <div class="flex items-center justify-between mb-4 pb-3 border-b border-brand-border">
@@ -472,6 +547,10 @@
           <span>📋 Fila Sheets</span>
         </button>
 
+        <button type="button" onclick="openWeighInModal()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/30 hover:bg-amber-500/20 hover:border-amber-500/50 transition shadow-sm" title="Ingresar peso real de balanza y recalibrar curva">
+          <span>⚖️</span>
+          <span class="hidden sm:inline">Balanza Real</span>
+        </button>
         <button id="btnSync" onclick="fetchLiveGoogleSheetsData(true)" class="flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-xs font-bold bg-sky-500 hover:bg-sky-400 text-brand-dark transition shadow-lg shadow-sky-500/25 active:scale-95">
           <svg id="syncIcon" class="w-4 h-4 transition-transform duration-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
@@ -1025,6 +1104,12 @@
       </div>
       <div id="kpiProjectedWeight" class="text-xl sm:text-2xl font-black text-cyan-300">79,3 kg</div>
       <div id="kpiWeightDrop" class="text-[11px] text-cyan-400 mt-1 font-medium">-3,7 kg desde 83 kg <span class="text-slate-400 font-normal">· Grasa pura: 78,9 kg</span></div>
+      <div class="flex items-center justify-between mt-2.5 pt-2 border-t border-slate-800/80">
+        <button type="button" onclick="openWeighInModal()" class="text-[11px] font-semibold text-amber-400 hover:text-amber-300 flex items-center gap-1 transition">
+          <span>✏️</span> <span>Ajustar Balanza Real</span>
+        </button>
+        <span id="kpiWeightAnchorBadge" class="text-[10px] font-medium text-slate-500">Auto-calibrado</span>
+      </div>
     </div>
 
     <!-- KPI 7: Sesiones de Fuerza / Sobrecarga (v5.0 Biometría) -->
@@ -1212,6 +1297,9 @@
             <span id="badgeWeightCalcMode" class="text-xs font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-md">
               Cálculo Bioenergético Diario Activo
             </span>
+            <button type="button" onclick="openWeighInModal()" class="text-xs font-bold text-amber-400 bg-amber-500/10 border border-amber-500/30 px-3 py-1 rounded-md hover:bg-amber-500/20 hover:border-amber-500/50 transition flex items-center gap-1.5 shadow-sm">
+              <span>⚖️</span> <span>Ingresar Peso Real</span>
+            </button>
           </div>
         </div>
         <p class="text-xs text-slate-400 mb-3">
@@ -2579,12 +2667,14 @@
       const kpiTitle = document.getElementById('kpiWeightTitle');
       const kpiWeight = document.getElementById('kpiProjectedWeight');
       const kpiDrop = document.getElementById('kpiWeightDrop');
+      const kpiAnchor = document.getElementById('kpiWeightAnchorBadge');
       if (!kpiWeight) return;
 
       if (isRecomp) {
         if (kpiTitle) kpiTitle.textContent = "BALANZA RECOMP";
         kpiWeight.textContent = "81,2 kg";
         if (kpiDrop) kpiDrop.innerHTML = "Estabilización 81,0 - 81,4 kg";
+        if (kpiAnchor) kpiAnchor.textContent = "Meta Definición";
         return;
       }
 
@@ -2601,15 +2691,34 @@
 
       const todayObj = dataset.find(d => d.isPartial) || dataset[dataset.length - 1];
       let dayLabel = "HOY";
+      let cleanDayKey = "";
       if (todayObj && todayObj.fecha) {
         const parts = todayObj.fecha.split('/');
         dayLabel = parts.length >= 2 ? `${parts[0]}/${parts[1]}` : todayObj.fecha;
+        cleanDayKey = dayLabel;
       }
 
-      if (kpiTitle) kpiTitle.textContent = `PESO EN VIVO (${dayLabel})`;
+      const weighIns = getStoredWeighIns();
+      const hasRealToday = cleanDayKey && weighIns[cleanDayKey];
+
+      if (kpiTitle) {
+        kpiTitle.textContent = hasRealToday ? `BALANZA REAL (${dayLabel})` : `PESO EN VIVO (${dayLabel})`;
+      }
       kpiWeight.textContent = `${latestScale.toFixed(1).replace('.', ',')} kg`;
+
       if (kpiDrop) {
-        kpiDrop.innerHTML = `${diffSign} kg desde 83 kg <span class="text-slate-400 font-normal">· Grasa pura: ${latestPure.toFixed(1).replace('.', ',')} kg</span>`;
+        const realNote = hasRealToday ? `<span class="text-amber-400 font-semibold">· Balanza Real</span>` : `<span class="text-slate-400 font-normal">· Grasa pura: ${latestPure.toFixed(1).replace('.', ',')} kg</span>`;
+        kpiDrop.innerHTML = `${diffSign} kg desde 83 kg ${realNote}`;
+      }
+
+      if (kpiAnchor) {
+        if (hasRealToday) {
+          kpiAnchor.className = "text-[10px] font-bold text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded";
+          kpiAnchor.textContent = "⭐ Pesaje Oficial Hoy";
+        } else {
+          kpiAnchor.className = "text-[10px] font-medium text-cyan-400";
+          kpiAnchor.textContent = "Curva Calibrada Activa";
+        }
       }
     }
 
@@ -3360,26 +3469,205 @@
     }
 
         // MOTOR MATEMÁTICO & BIOENERGÉTICO DE PROYECCIÓN DE PESO (BASES CIENTÍFICAS KEVIN HALL / FORBES)
-    function calculateBiophysicalWeightTrajectory(data, initialWeight = 83.0) {
-      if (!Array.isArray(data) || data.length === 0) {
-        return { labels: [], scaleData: [], pureFatData: [], muscleData: [], pointRadius: [], pointBgColors: [], metaData: [] };
+    // ==========================================
+    // SISTEMA DE GESTIÓN Y CALIBRACIÓN DE PESAJES REALES
+    // ==========================================
+    const DEFAULT_OFFICIAL_WEIGH_INS = {
+      '21/10': { fecha: '2026-10-21', key: '21/10', peso: 83.0, contexto: 'Línea Base Inicial', isOfficial: true },
+      '28/10': { fecha: '2026-10-28', key: '28/10', peso: 79.6, contexto: 'Pesaje Oficial Balanza', isOfficial: true }
+    };
+
+    function getStoredWeighIns() {
+      try {
+        const raw = localStorage.getItem('barriketo_user_weighins');
+        const custom = raw ? JSON.parse(raw) : {};
+        return { ...DEFAULT_OFFICIAL_WEIGH_INS, ...custom };
+      } catch (e) {
+        console.warn('Error leyendo pesajes locales:', e);
+        return { ...DEFAULT_OFFICIAL_WEIGH_INS };
+      }
+    }
+
+    function saveUserWeighIn(dateIso, weightKg, context = 'ayunas', notes = '') {
+      try {
+        const raw = localStorage.getItem('barriketo_user_weighins');
+        const custom = raw ? JSON.parse(raw) : {};
+        const parts = dateIso.split('-');
+        const key = `${parts[2]}/${parts[1]}`;
+        custom[key] = {
+          fecha: dateIso,
+          key: key,
+          peso: Number(weightKg),
+          contexto: context,
+          nota: notes,
+          timestamp: Date.now()
+        };
+        localStorage.setItem('barriketo_user_weighins', JSON.stringify(custom));
+
+        // Intento de persistencia asíncrona en Google Sheets si hay webhook configurado
+        const webhookUrl = localStorage.getItem('barriketo_webhook_url');
+        if (webhookUrl) {
+          fetch(webhookUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              action: 'log_weight',
+              token: 'barriketo_secure_2026',
+              fecha: dateIso,
+              peso: Number(weightKg),
+              contexto: context,
+              nota: notes
+            })
+          }).catch(err => console.warn('Aviso webhook log_weight:', err));
+        }
+
+        return key;
+      } catch (e) {
+        console.error('Error guardando pesaje:', e);
+        return null;
+      }
+    }
+
+    function deleteUserWeighIn(key) {
+      if (key === '21/10' || key === '28/10') {
+        showToast('🔒 Registro Protegido', 'El pesaje del 21/10 (inicio 83kg) y 28/10 (oficial 79.6kg) son anclas base del protocolo.', 'warning');
+        return false;
+      }
+      try {
+        const raw = localStorage.getItem('barriketo_user_weighins');
+        if (raw) {
+          const custom = JSON.parse(raw);
+          delete custom[key];
+          localStorage.setItem('barriketo_user_weighins', JSON.stringify(custom));
+        }
+        renderWeighInHistoryList();
+        const dataset = window.currentDashboardData || (typeof fallbackData !== 'undefined' ? fallbackData : []);
+        updateDashboard(dataset, true);
+        showToast('🗑️ Pesaje Eliminado', `Se eliminó el ancla para el día ${key}. Curva recalibrada.`, 'info');
+        return true;
+      } catch (e) {
+        console.error('Error eliminando pesaje:', e);
+        return false;
+      }
+    }
+
+    function openWeighInModal() {
+      const modal = document.getElementById('weighInModal');
+      if (!modal) return;
+      modal.classList.remove('hidden');
+
+      // Prellenar fecha con hoy
+      const dateInput = document.getElementById('weighInDate');
+      if (dateInput) {
+        const todayIso = new Date().toISOString().split('T')[0];
+        dateInput.value = todayIso;
       }
 
-      // Progresión asintótica de vaciado de glucógeno y bolo digestivo en cetosis profunda (~2,3 kg en meseta)
+      // Prellenar peso con la proyección actual
+      const weightInput = document.getElementById('weighInWeight');
+      if (weightInput) {
+        const dataset = window.currentDashboardData || (typeof fallbackData !== 'undefined' ? fallbackData : []);
+        if (dataset && dataset.length > 0) {
+          const traj = calculateBiophysicalWeightTrajectory(dataset, 83.0);
+          if (traj.scaleData && traj.scaleData.length > 0) {
+            weightInput.value = traj.scaleData[traj.scaleData.length - 1];
+          }
+        }
+      }
+
+      renderWeighInHistoryList();
+    }
+
+    function closeWeighInModal() {
+      const modal = document.getElementById('weighInModal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function renderWeighInHistoryList() {
+      const listContainer = document.getElementById('weighInHistoryList');
+      const badgeCount = document.getElementById('weighInCountBadge');
+      if (!listContainer) return;
+
+      const weighIns = getStoredWeighIns();
+      const keys = Object.keys(weighIns).sort((a, b) => {
+        const [da, ma] = a.split('/').map(Number);
+        const [db, mb] = b.split('/').map(Number);
+        return (ma === mb) ? da - db : ma - mb;
+      });
+
+      if (badgeCount) badgeCount.textContent = `${keys.length} anclas activas`;
+
+      if (keys.length === 0) {
+        listContainer.innerHTML = '<p class="text-xs text-slate-500 py-2">No hay pesajes registrados.</p>';
+        return;
+      }
+
+      listContainer.innerHTML = keys.map(k => {
+        const item = weighIns[k];
+        const isOfficial = item.isOfficial || k === '21/10' || k === '28/10';
+        const ctxLabel = item.contexto === 'ayunas' ? 'Ayunas' : (item.contexto === 'post_fuerza' ? 'Post-fuerza' : (item.contexto || 'Balanza'));
+        return `
+          <div class="flex items-center justify-between bg-slate-900/80 border border-slate-800 rounded-xl px-3 py-2 text-xs">
+            <div class="flex items-center gap-2.5">
+              <span class="font-bold text-amber-400">${k}</span>
+              <span class="text-sm font-black text-white">${Number(item.peso).toFixed(1).replace('.', ',')} kg</span>
+              <span class="text-[10px] text-slate-400 bg-slate-800 px-2 py-0.5 rounded-full">${ctxLabel}</span>
+              ${item.nota ? `<span class="text-[10px] text-slate-500 italic max-w-[120px] truncate" title="${item.nota}">${item.nota}</span>` : ''}
+            </div>
+            <div>
+              ${isOfficial ? `<span class="text-[10px] text-cyan-400 font-medium px-2 py-0.5 rounded bg-cyan-500/10 border border-cyan-500/20">Oficial</span>` : `
+                <button type="button" onclick="deleteUserWeighIn('${k}')" class="text-slate-500 hover:text-rose-400 p-1 transition" title="Eliminar este pesaje">
+                  🗑️
+                </button>
+              `}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function handleWeighInSubmit(e) {
+      e.preventDefault();
+      const dateVal = document.getElementById('weighInDate').value;
+      const weightVal = parseFloat(document.getElementById('weighInWeight').value);
+      const contextVal = document.getElementById('weighInContext').value;
+      const notesVal = document.getElementById('weighInNotes').value.trim();
+
+      if (!dateVal || isNaN(weightVal) || weightVal <= 0) {
+        showToast('⚠️ Datos Incompletos', 'Por favor ingresá una fecha y peso válidos.', 'warning');
+        return;
+      }
+
+      const key = saveUserWeighIn(dateVal, weightVal, contextVal, notesVal);
+      closeWeighInModal();
+
+      // Recalcular y re-renderizar dashboard de inmediato
+      const dataset = window.currentDashboardData || (typeof fallbackData !== 'undefined' ? fallbackData : []);
+      updateDashboard(dataset, true);
+
+      showToast('✅ Curva Recalibrada', `Pesaje real de ${weightVal.toFixed(1).replace('.', ',')} kg registrado para el ${key}. Curva ajustada.`, 'success');
+    }
+
+    // ==========================================
+    // CÁLCULO DE TRAYECTORIA BIOENERGÉTICA CON ANCLAJE PIECEWISE
+    // ==========================================
+    function calculateBiophysicalWeightTrajectory(data, initialWeight = 83.0) {
+      if (!Array.isArray(data) || data.length === 0) {
+        return { labels: [], scaleData: [], pureFatData: [], muscleData: [], pointRadius: [], pointBgColors: [], realWeighInPoints: [], metaData: [] };
+      }
+
+      const weighIns = getStoredWeighIns();
       const glycogenGutCurve = [0.0, 1.10, 1.75, 2.10, 2.30];
       let cumAdiposeLossKg = 0.0;
       let currEdema = 0.0;
 
       const labels = [];
-      const scaleData = [];
-      const pureFatData = [];
-      const muscleData = [];
-      const pointRadius = [];
-      const pointBgColors = [];
+      const rawComponents = [];
       const metaData = [];
 
       data.forEach((d, i) => {
         const shortDate = (d.fecha || '').replace('/2026', '');
+        const cleanKey = shortDate.split('/').slice(0, 2).join('/');
         const isToday = d.isPartial || isDateToday(d.fecha);
         const dayLabel = isToday ? `${shortDate} (D${i + 1} Hoy)` : `${shortDate} (D${i + 1})`;
         labels.push(dayLabel);
@@ -3391,72 +3679,140 @@
         const fuerzaMin = Number(d.fuerzaMin) || 0;
         const calFuerza = Number(d.calFuerza) || 0;
 
-        // 1. Pérdida biológica de tejido adiposo basada en oxidación de lípidos y balance energético
-        // En cetosis, ~70% del gasto energético proviene de beta-oxidación de ácidos grasos
+        // 1. Pérdida biológica de tejido adiposo
         const grasOx = (calQuem * 0.70) / 9.0;
         const grasNeta = Math.max(0, grasOx - gras);
         const anaerobicEq = (calFuerza * 0.70) / 9.0;
         const grasNetaCorr = Math.max(0, grasNeta - anaerobicEq);
-        // La densidad del tejido adiposo humano es de ~7.700 kcal/kg (86% lípido, 14% agua y matriz estromal)
-        // Por tanto, 1g de grasa neta oxidada elimina 1.16g de tejido adiposo corporal
         const dailyAdiposeLossKg = (grasNetaCorr * 1.16) / 1000.0;
         if (i > 0) {
           cumAdiposeLossKg += dailyAdiposeLossKg;
         }
 
-        // 2. Vaciado de glucógeno y agua osmótica base (~2.3 kg en estado estacionario de cetosis)
+        // 2. Vaciado de glucógeno y agua osmótica
         const baseDepletion = i < glycogenGutCurve.length ? glycogenGutCurve[i] : 2.30;
-
-        // 3. Sensibilidad a carbohidratos (retención osmótica de glucógeno e insulina cuando CHO > 15g)
-        // Cada gramo de CHO por encima del umbral cetogénico retiene ~3.5g de agua + 1g glucógeno = 4.5g masa húmeda
         const carbWaterRetention = Math.max(0, (carb - 15.0) * 0.0045);
         const effectiveDepletion = Math.max(0, baseDepletion - carbWaterRetention);
 
-        // 4. Curva de Tendencia de Grasa Pura (Masa Seca sin Edema)
-        const wPureFat = Math.round((initialWeight - effectiveDepletion - cumAdiposeLossKg) * 10) / 10;
-        pureFatData.push(wPureFat);
-
-        // 5. Edema miofibrilar inflamatorio post-fuerza (Mecanotransducción)
+        // 3. Edema miofibrilar inflamatorio post-fuerza
         if (fuerzaMin > 0) {
           const edemaGen = Math.min(0.40, Math.max(0.20, (calFuerza / 280.0) * 0.32));
           currEdema = (i === 0) ? edemaGen : (currEdema * 0.30) + edemaGen;
         } else {
-          // Día de descanso: drenaje linfático acelerado
           currEdema = currEdema * 0.15;
         }
         currEdema = Math.min(0.42, currEdema);
 
-        // 6. Peso Real Proyectado en Balanza
-        const wScale = (i === 0) ? initialWeight : Math.round((wPureFat + currEdema) * 10) / 10;
-        scaleData.push(wScale);
+        const wPureRaw = Math.round((initialWeight - effectiveDepletion - cumAdiposeLossKg) * 10) / 10;
+        const wScaleRaw = (i === 0) ? initialWeight : Math.round((wPureRaw + currEdema) * 10) / 10;
 
-        muscleData.push(62.5); // Blindaje muscular blindado en 62.5 kg
+        rawComponents.push({
+          index: i,
+          cleanKey: cleanKey,
+          wScaleRaw: wScaleRaw,
+          wPureRaw: wPureRaw,
+          edema: currEdema,
+          effectiveDepletion: effectiveDepletion,
+          cumAdiposeLossKg: cumAdiposeLossKg,
+          dailyAdiposeLossKg: dailyAdiposeLossKg,
+          carbWaterRetention: carbWaterRetention,
+          carb: carb
+        });
+      });
 
-        // Estilos de los puntos
-        if (i === data.length - 1) {
-          pointRadius.push(8);
-          pointBgColors.push('#10B981'); // Verde esmeralda para el día de hoy
-        } else if (i === data.length - 2) {
-          pointRadius.push(6);
-          pointBgColors.push('#94A3B8');
+      // Identificar índices de anclaje presentes en el dataset
+      const anchorIndices = [];
+      rawComponents.forEach(comp => {
+        if (weighIns[comp.cleanKey]) {
+          anchorIndices.push({
+            index: comp.index,
+            weight: Number(weighIns[comp.cleanKey].peso),
+            key: comp.cleanKey
+          });
+        }
+      });
+
+      const scaleData = [];
+      const pureFatData = [];
+      const muscleData = [];
+      const pointRadius = [];
+      const pointBgColors = [];
+      const realWeighInPoints = [];
+
+      rawComponents.forEach((comp, i) => {
+        let finalScale = comp.wScaleRaw;
+        const isAnchorDay = weighIns[comp.cleanKey] !== undefined;
+
+        if (anchorIndices.length > 0) {
+          const firstAnchor = anchorIndices[0];
+          const lastAnchor = anchorIndices[anchorIndices.length - 1];
+
+          if (i <= firstAnchor.index) {
+            finalScale = comp.wScaleRaw;
+          } else if (i >= lastAnchor.index) {
+            const deltaForward = comp.wScaleRaw - rawComponents[lastAnchor.index].wScaleRaw;
+            finalScale = Math.round((lastAnchor.weight + deltaForward) * 10) / 10;
+          } else {
+            // Entre dos anclas: interpolación y ajuste de pendiente metabólica
+            for (let a = 0; a < anchorIndices.length - 1; a++) {
+              const aA = anchorIndices[a];
+              const aB = anchorIndices[a + 1];
+              if (aA.index <= i && i <= aB.index) {
+                const t = (i - aA.index) / (aB.index - aA.index);
+                const rawA = rawComponents[aA.index].wScaleRaw;
+                const rawB = rawComponents[aB.index].wScaleRaw;
+                const rawI = comp.wScaleRaw;
+                const predDiff = rawI - rawA;
+                const totalPredDiff = rawB - rawA;
+                const totalRealDiff = aB.weight - aA.weight;
+                const corr = (totalRealDiff - totalPredDiff) * t;
+                finalScale = Math.round((rawI + (aA.weight - rawA) + corr) * 10) / 10;
+                break;
+              }
+            }
+          }
+        }
+
+        if (isAnchorDay) {
+          finalScale = Number(weighIns[comp.cleanKey].peso);
+          realWeighInPoints.push(finalScale);
         } else {
-          pointRadius.push(6);
+          realWeighInPoints.push(null);
+        }
+
+        const finalPure = Math.round((finalScale - comp.edema) * 10) / 10;
+        scaleData.push(finalScale);
+        pureFatData.push(finalPure);
+        muscleData.push(62.5); // Blindaje muscular
+
+        // Estilos de los puntos en la curva continua
+        if (isAnchorDay) {
+          pointRadius.push(7);
+          pointBgColors.push('#F59E0B'); // Ámbar/dorado para días con pesaje real
+        } else if (i === data.length - 1) {
+          pointRadius.push(8);
+          pointBgColors.push('#10B981'); // Verde esmeralda para hoy
+        } else {
+          pointRadius.push(5);
           pointBgColors.push('#38BDF8');
         }
 
         metaData.push({
-          wScale,
-          wPureFat,
-          dailyAdiposeGrams: Math.round(dailyAdiposeLossKg * 1000),
-          cumAdiposeKg: Math.round(cumAdiposeLossKg * 100) / 100,
-          edemaGrams: Math.round(currEdema * 1000),
-          carbWaterGrams: Math.round(carbWaterRetention * 1000),
-          isDeepKetosis: carb <= 20
+          wScale: finalScale,
+          wPureFat: finalPure,
+          dailyAdiposeGrams: Math.round(comp.dailyAdiposeLossKg * 1000),
+          cumAdiposeKg: Math.round(comp.cumAdiposeLossKg * 100) / 100,
+          edemaGrams: Math.round(comp.edema * 1000),
+          carbWaterGrams: Math.round(comp.carbWaterRetention * 1000),
+          isDeepKetosis: comp.carb <= 20,
+          isRealWeighIn: isAnchorDay,
+          realWeighInWeight: isAnchorDay ? weighIns[comp.cleanKey].peso : null
         });
       });
 
-      return { labels, scaleData, pureFatData, muscleData, pointRadius, pointBgColors, metaData };
+      return { labels, scaleData, pureFatData, muscleData, pointRadius, pointBgColors, realWeighInPoints, metaData };
     }
+
 
     function renderCharts(data) {
       const labels = data.map(d => d.fecha.replace('/2026', ''));
@@ -3788,6 +4144,8 @@
         ? [62.5, 62.5, 62.5, 62.5, 62.5, 62.5, 62.5, 62.5]
         : trajectory.muscleData;
 
+      const realPointsDataset = isRecomp ? [] : (trajectory.realWeighInPoints || []);
+
       renderOrUpdateChart('chartWeightTrajectory', {
         type: 'line',
         data: {
@@ -3802,7 +4160,21 @@
               fill: false,
               tension: 0.35,
               pointRadius: pointRadiusArray,
-              pointBackgroundColor: pointBgColorArray
+              pointBackgroundColor: pointBgColorArray,
+              order: 2
+            },
+            {
+              label: 'Pesaje Real Verificado en Balanza (kg)',
+              data: realPointsDataset,
+              borderColor: '#F59E0B',
+              backgroundColor: '#F59E0B',
+              pointRadius: realPointsDataset.map(v => v !== null ? 9 : 0),
+              pointHoverRadius: 12,
+              pointStyle: 'rectRot',
+              pointBorderColor: '#FFFFFF',
+              pointBorderWidth: 2,
+              showLine: false,
+              order: 1
             },
             {
               label: isRecomp ? 'Banda de Equilibrio Osmótico (81,2 kg · Cero Ganancia Grasa)' : 'Tendencia Grasa Pura Sin Edema (kg)',
@@ -3814,7 +4186,8 @@
               fill: true,
               tension: 0.35,
               pointRadius: 3,
-              pointBackgroundColor: isRecomp ? '#06B6D4' : '#A855F7'
+              pointBackgroundColor: isRecomp ? '#06B6D4' : '#A855F7',
+              order: 3
             },
             {
               label: 'Masa Muscular Blindada por Mecanotransducción (kg)',
@@ -3823,7 +4196,8 @@
               borderWidth: 1.5,
               borderDash: [2, 4],
               pointRadius: 0,
-              fill: false
+              fill: false,
+              order: 4
             }
           ]
         },
@@ -3842,7 +4216,9 @@
                   const idx = items[0] ? items[0].dataIndex : 0;
                   const meta = trajectory.metaData[idx];
                   if (!meta) return [];
+                  const realBadge = meta.isRealWeighIn ? [`⭐ BALANZA REAL: ${meta.realWeighInWeight} kg (Pesaje Verificado)`] : [];
                   return [
+                    ...realBadge,
                     `🥩 Grasa pura oxidada hoy: ${meta.dailyAdiposeGrams} g`,
                     `📉 Grasa acumulada eliminada: ${meta.cumAdiposeKg} kg`,
                     `🏋️ Edema de fuerza: +${meta.edemaGrams} g`,
