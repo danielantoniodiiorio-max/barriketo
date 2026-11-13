@@ -3474,7 +3474,8 @@
     // ==========================================
     const DEFAULT_OFFICIAL_WEIGH_INS = {
       '21/10': { fecha: '2026-10-21', key: '21/10', peso: 83.0, contexto: 'Línea Base Inicial', isOfficial: true },
-      '28/10': { fecha: '2026-10-28', key: '28/10', peso: 79.6, contexto: 'Pesaje Oficial Balanza', isOfficial: true }
+      '28/10': { fecha: '2026-10-28', key: '28/10', peso: 79.6, contexto: 'Pesaje Oficial Balanza', isOfficial: true },
+      '07/11': { fecha: '2026-11-07', key: '07/11', peso: 78.3, contexto: 'Pesaje Oficial Balanza', isOfficial: true }
     };
 
     function getStoredWeighIns() {
@@ -3529,7 +3530,7 @@
     }
 
     function deleteUserWeighIn(key) {
-      if (key === '21/10' || key === '28/10') {
+      if (key === '21/10' || key === '28/10' || key === '07/11') {
         showToast('🔒 Registro Protegido', 'El pesaje del 21/10 (inicio 83kg) y 28/10 (oficial 79.6kg) son anclas base del protocolo.', 'warning');
         return false;
       }
@@ -3604,7 +3605,7 @@
 
       listContainer.innerHTML = keys.map(k => {
         const item = weighIns[k];
-        const isOfficial = item.isOfficial || k === '21/10' || k === '28/10';
+        const isOfficial = item.isOfficial || k === '21/10' || k === '28/10' || k === '07/11';
         const ctxLabel = item.contexto === 'ayunas' ? 'Ayunas' : (item.contexto === 'post_fuerza' ? 'Post-fuerza' : (item.contexto || 'Balanza'));
         return `
           <div class="flex items-center justify-between bg-slate-900/80 border border-slate-800 rounded-xl px-3 py-2 text-xs">
