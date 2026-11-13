@@ -3,7 +3,7 @@ name: Garmin Connect Auto-Sync to Google Sheets
 on:
   schedule:
     # Corre automáticamente cada 30 minutos las 24 horas en la nube (incluso con la PC apagada)
-    - cron: '*/30 * * * *'
+    - cron: '*/20 * * * *'
   workflow_dispatch: # Permite dispararlo manualmente con un clic desde el celular o la web de GitHub
 
 permissions:
