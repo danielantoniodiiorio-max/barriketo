@@ -1,0 +1,53 @@
+name: Garmin Connect Auto-Sync to Google Sheets
+
+on:
+  schedule:
+    # Corre automáticamente cada 30 minutos las 24 horas en la nube (incluso con la PC apagada)
+    - cron: '*/30 * * * *'
+  workflow_dispatch: # Permite dispararlo manualmente con un clic desde el celular o la web de GitHub
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install Dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Restore & Update Garmin Session Cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.garminconnect
+          key: garmin-session-${{ runner.os }}-${{ github.run_id }}
+          restore-keys: |
+            garmin-session-${{ runner.os }}-
+
+      - name: Run Garmin Sync Script
+        env:
+          GARMIN_EMAIL: ${{ secrets.GARMIN_EMAIL }}
+          GARMIN_PASSWORD: ${{ secrets.GARMIN_PASSWORD }}
+          GARMIN_TOKENS: ${{ secrets.GARMIN_TOKENS }}
+          BARRIKETO_WEBHOOK_URL: ${{ secrets.BARRIKETO_WEBHOOK_URL || 'https://script.google.com/macros/s/AKfycbwgwwUth2hPPWgdOJiud4aP9rCTLimhkgdAQnv5fo46htDnxWW78BX5QClFJOEK3as-/exec' }}
+          BARRIKETO_SECRET_TOKEN: ${{ secrets.BARRIKETO_SECRET_TOKEN || 'barriketo_secure_2026' }}
+        run: |
+          python sync_garmin.py
+
+      - name: Commit Updated Live Metrics to GitHub Pages
+        run: |
+          git config user.name "Barriketo Cloud Sync"
+          git config user.email "actions@github.com"
+          git add garmin_live_metrics.js garmin_live_metrics.json || true
+          git diff --staged --quiet || (git commit -m "chore: auto-sync Garmin live metrics" && git push)
