@@ -466,18 +466,18 @@
     "action": "sync_garmin",
     "token": "barriketo_secure_2026",
     "fecha": "2026-11-21",
-    "pasos": 1838,
+    "pasos": 4070,
     "minInt": 0,
-    "fcRep": 46,
-    "calAct": 88,
-    "calRep": 176,
-    "calQuem": 264,
+    "fcRep": 42,
+    "calAct": 187,
+    "calRep": 982,
+    "calQuem": 1169,
     "pisos": 0,
-    "fuerzaMin": 0.0,
+    "fuerzaMin": 0.1,
     "calFuerza": 0.0,
     "glucogeno": 0.0,
-    "last_sent_pasos": 1838,
-    "last_sent_calQuem": 264,
-    "last_sent_fuerzaMin": 0.0
+    "last_sent_pasos": 4070,
+    "last_sent_calQuem": 1169,
+    "last_sent_fuerzaMin": 0.1
   }
 }
